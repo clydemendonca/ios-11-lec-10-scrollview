@@ -11,7 +11,7 @@ class ImageViewController: UIViewController {
     
     var imageURL : URL? {
         didSet {
-            imageView.image = nil
+//            imageView.image = nil
             if view.window != nil {
                 fetchImg()
             }
@@ -29,12 +29,14 @@ class ImageViewController: UIViewController {
     
     private func fetchImg() {
         if let url = imageURL {
-            do {
-                let urlContents = try Data(contentsOf: url)
-                imageView.image = UIImage(data: urlContents)
-            } catch let error {
-                
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                if let urlContents = try? Data(contentsOf: url) {
+                    DispatchQueue.main.async {
+                        self?.imageView.image = UIImage(data: urlContents)
+                    }
+                }
             }
+           
         }
     }
     
